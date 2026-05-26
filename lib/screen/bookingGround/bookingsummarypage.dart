@@ -4,6 +4,7 @@ import 'package:booktoplay_app/screen/bookingGround/BookingSuccessPage.dart';
 import 'package:booktoplay_app/service/databaseoperation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class PlayerInput {
   final TextEditingController nameController = TextEditingController();
@@ -480,11 +481,14 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
                 spacing: 10,
                 runSpacing: 10,
                 children: slots.map((slot) {
+                  final cleanedSlot = slot.trim();
                   final isBooked = bookedSlots.contains(slot.trim());
                   final isSelected = selectedSlotTime == slot;
+                  final isPast = _isSlotPast(cleanedSlot, selectedDate!);
+                  final isUnavailable = isBooked || isPast;
 
                   return InkWell(
-                    onTap: isBooked
+                    onTap: isUnavailable
                         ? null
                         : () {
                             setState(() {
@@ -498,14 +502,20 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
                         horizontal: 10,
                       ),
                       decoration: BoxDecoration(
-                        color: isBooked
-                            ? Colors.green.shade300
+                        color: isPast
+                            ? Colors
+                                  .grey
+                                  .shade300 // Grey out past slots
+                            : isBooked
+                            ? Colors.red.shade50
                             : isSelected
                             ? Colors.green
                             : const Color(0xFFE8F5E9),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: isBooked
+                          color: isPast
+                              ? Colors.grey.shade400
+                              : isBooked
                               ? Colors.red
                               : isSelected
                               ? Colors.green
@@ -517,9 +527,17 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
                           Text(slot, textAlign: TextAlign.center),
                           const SizedBox(height: 5),
                           Text(
-                            isBooked ? "BOOKED" : "AVAILABLE",
+                            isPast
+                                ? "EXPIRED"
+                                : isBooked
+                                ? "BOOKED"
+                                : "AVAILABLE",
                             style: TextStyle(
-                              color: isBooked ? Colors.red : Colors.green,
+                              color: isPast
+                                  ? Colors.grey.shade600
+                                  : isBooked
+                                  ? Colors.red
+                                  : Colors.green,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -533,5 +551,44 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
           ),
       ],
     );
+  }
+
+  //=====================Helper function===========================
+  bool _isSlotPast(String slotTime, DateTime selectedDate) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final targetDate = DateTime(
+      selectedDate.year,
+      selectedDate.month,
+      selectedDate.day,
+    );
+    if (targetDate.isAfter(today)) {
+      return false;
+    }
+    if (targetDate.isBefore(today)) {
+      return true;
+    }
+    try {
+      String startTimeString = slotTime.split('-')[0].trim();
+
+      DateTime parsedTime;
+      if (startTimeString.toLowerCase().contains('am') ||
+          startTimeString.toLowerCase().contains('pm')) {
+        parsedTime = DateFormat("h:mm a").parse(startTimeString);
+      } else {
+        parsedTime = DateFormat("H:mm").parse(startTimeString);
+      }
+      final slotDateTime = DateTime(
+        now.year,
+        now.month,
+        now.day,
+        parsedTime.hour,
+        parsedTime.minute,
+      );
+
+      return now.isAfter(slotDateTime);
+    } catch (e) {
+      return false;
+    }
   }
 }

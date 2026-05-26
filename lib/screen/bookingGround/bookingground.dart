@@ -122,7 +122,7 @@ class Bookingground extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                                  Sportsformpage(Sportsname: 'Tennis'),
+                                  GroundsResultPage(sportsname: 'Tennis'),
                             ),
                           );
                         },
@@ -139,7 +139,7 @@ class Bookingground extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                                  Sportsformpage(Sportsname: 'volleyball'),
+                                  GroundsResultPage(sportsname: 'volleyball'),
                             ),
                           );
                         },
