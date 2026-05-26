@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:booktoplay_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:booktoplay_app/auth/mobile_login.dart';
 import 'package:booktoplay_app/navbar/shell.dart';
@@ -28,7 +29,7 @@ class GoRouterRefreshStream extends ChangeNotifier {
 }
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/',
+  initialLocation: '/splash',
 
   refreshListenable: GoRouterRefreshStream(
     FirebaseAuth.instance.authStateChanges(),
@@ -40,6 +41,11 @@ final GoRouter appRouter = GoRouter(
 
     final isLoginPage = state.matchedLocation == '/login';
     final isLandingPage = state.matchedLocation == '/';
+    final isSplashPage = state.matchedLocation == '/splash';
+
+    if (isSplashPage) {
+      return null; 
+    }
 
     if (isLoggedIn && (isLoginPage || isLandingPage)) {
       return '/home';
@@ -55,6 +61,11 @@ final GoRouter appRouter = GoRouter(
   },
 
   routes: [
+
+    GoRoute(
+      path: '/splash',
+      builder: (_, _) => const SplashScreen(),
+    ),
     ShellRoute(
       builder: (context, state, child) {
         return ShellLayout(child: child);

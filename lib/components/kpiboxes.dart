@@ -22,19 +22,20 @@ class Kpiboxes extends StatelessWidget {
       child: Container(
         width: 50,
 
-        padding: const EdgeInsets.all(15),
+        padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           // Darker, more transparent color to match the image
           color: const Color(0xFF161B1B).withValues(alpha: 0.6),
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(15),
           border: Border.all(color: Colors.white70, width: 1),
         ),
         child: Column(
           children: [
             Row(
+              
               children: [
                 Icon(icon,color: iconcolor,),
-            Text(title, style: TextStyle(color: textcolor, fontSize: 25, fontWeight: FontWeight.bold)),
+            Text(title, style: TextStyle(color: textcolor, fontSize: 20, fontWeight: FontWeight.bold)),
 
               ],
             ),

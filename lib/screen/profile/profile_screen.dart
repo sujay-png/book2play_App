@@ -14,12 +14,18 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final user = FirebaseAuth.instance.currentUser;
   @override
   Widget build(BuildContext context) {
-    final String useremail =
+  final user = FirebaseAuth.instance.currentUser;
+
+   final String useremail =
         FirebaseAuth.instance.currentUser?.email ?? "Guest@user.com";
+    
     String displayName = useremail.split('@')[0];
+    
+    final String initial = (user?.displayName != null && user!.displayName!.isNotEmpty)
+        ? user.displayName![0].toUpperCase()
+        : displayName.isNotEmpty ? displayName[0].toUpperCase() : 'U';
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -64,14 +70,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: [
                         Stack(
                           children: [
-                            // 1. The Main Avatar
+                          
                             CircleAvatar(
-                              radius: 35, // Size of the avatar
+                              radius: 35,
                               backgroundColor: const Color(
                                 0xFF00D9A3,
-                              ), // Your mint color
-                              child: const Text(
-                                'AJ',
+                              ), 
+                              child:  Text(
+                               initial,
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 24,
@@ -80,23 +86,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             ),
 
-                            // 2. The Verified Badge
+                           
                             Positioned(
                               bottom: 0,
                               right: 0,
                               child: Container(
                                 padding: const EdgeInsets.all(
                                   2,
-                                ), // Padding for the black border effect
+                                ), 
                                 decoration: const BoxDecoration(
-                                  color: Colors.black, // The thick black ring
+                                  color: Colors.black,
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(
                                   Icons.check_circle,
                                   color: Color(
                                     0xFF81C784,
-                                  ), // Lighter green for the check mark
+                                  ), 
                                   size: 22,
                                 ),
                               ),
@@ -110,7 +116,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 20,
-                            fontWeight: FontWeight.w700, // Bold but not heavy
+                            fontWeight: FontWeight.w700, 
                             letterSpacing: -0.5,
                           ),
                         ),
@@ -126,7 +132,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   SizedBox(height: 15),
 
-                  // ===========PERFORMANCE =======================
+ // ==============================PERFORMANCE =====================================
                   Text(
                     'PERFORMANCE',
                     style: TextStyle(
@@ -176,7 +182,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                   SizedBox(height: 15),
 
-                  //============Accounts==========================
+ //==========================================Accounts==============================
                   Text(
                     'ACCOUNT',
                     style: TextStyle(
@@ -210,6 +216,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     },
                   ),
                   SizedBox(height: 50),
+//===========================Logout & Delete Button==========================
 
                   Padding(
                   padding: const EdgeInsets.all(16),

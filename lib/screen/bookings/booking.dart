@@ -82,7 +82,7 @@ class _BookingState extends State<Booking> {
 
                             return Column(
                               children: [
-                                // ===== Stats Container =====
+                                // ============== Stats Container======================
                                 Container(
                                   padding: const EdgeInsets.all(20),
                                   decoration: BoxDecoration(
@@ -143,7 +143,7 @@ class _BookingState extends State<Booking> {
 
                                 const SizedBox(height: 25),
 
-                                // ===== Booking List =====
+                                // ============================ Booking List=========================
                                 if (bookings.isEmpty)
                                   const Center(
                                     child: Text(
@@ -173,7 +173,6 @@ class _BookingState extends State<Booking> {
               SizedBox(height: 25),
 
 
-              //Booking Card details
             ],
           ),
         ),
@@ -295,74 +294,4 @@ class _BookingState extends State<Booking> {
   }
 }
 
-//Choice Chip
-class ActionChoiceExample extends StatefulWidget {
-  const ActionChoiceExample({super.key});
 
-  @override
-  State<ActionChoiceExample> createState() => _ActionChoiceExampleState();
-}
-
-class _ActionChoiceExampleState extends State<ActionChoiceExample> {
-  int? _value = 0;
-  final List<String> _filters = ['All', 'Completed', 'Cancelled'];
-  final ScrollController _scrollController = ScrollController();
-
-  @override
-  void dispose() {
-    // Clean up the controller when the widget is disposed
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scrollbar(
-      controller: _scrollController,
-      thumbVisibility: true,
-      thickness: 4,
-      radius: const Radius.circular(10),
-      child: SingleChildScrollView(
-        controller: _scrollController,
-        scrollDirection: Axis.horizontal,
-
-        padding: const EdgeInsets.only(bottom: 12),
-        child: Wrap(
-          spacing: 8.0,
-          children: List<Widget>.generate(_filters.length, (int index) {
-            bool isSelected = _value == index;
-            return ChoiceChip(
-              label: Text(_filters[index]),
-              selected: isSelected,
-              onSelected: (bool selected) {
-                setState(() {
-                  _value = selected ? index : null;
-                });
-              },
-              // Text Styling
-              labelStyle: TextStyle(
-                color: isSelected ? const Color(0xFF00D9A3) : Colors.white70,
-                fontWeight: FontWeight.w600,
-              ),
-              backgroundColor: const Color(0xFF161B1B),
-              selectedColor: const Color(
-                0xFF161B1B,
-              ), // Keep same dark bg when selected
-              // Border and Shape
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-                side: BorderSide(
-                  color: isSelected ? const Color(0xFF00D9A3) : Colors.white12,
-                  width: 1.5,
-                ),
-              ),
-              showCheckmark: false,
-              elevation: 0,
-              pressElevation: 0,
-            );
-          }).toList(),
-        ),
-      ),
-    );
-  }
-}

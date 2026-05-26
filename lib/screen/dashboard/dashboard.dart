@@ -63,7 +63,7 @@ class _DashboardState extends State<Dashboard> {
                     return const Center(child: CircularProgressIndicator());
                   }
 
-                  final bookings = snapshot.data ?? [];                 
+                  final bookings = snapshot.data ?? [];
                   final upcomingBookings = bookings.where((booking) {
                     return booking.bookingDate != null &&
                         booking.bookingDate!.isAfter(DateTime.now());
@@ -170,10 +170,14 @@ class _DashboardState extends State<Dashboard> {
                     return const Center(child: CircularProgressIndicator());
                   }
 
-                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                
+                  if (snapshot.hasError ||
+                      !snapshot.hasData ||
+                      snapshot.data!.isEmpty) {
                     return const SizedBox();
                   }
 
+                 
                   final discounts = snapshot.data!;
 
                   return SizedBox(
@@ -204,9 +208,7 @@ class _DashboardState extends State<Dashboard> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-
                               const SizedBox(height: 10),
-
                               Text(
                                 discount.slotTime,
                                 style: const TextStyle(
@@ -215,9 +217,7 @@ class _DashboardState extends State<Dashboard> {
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-
                               const SizedBox(height: 8),
-
                               Text(
                                 discount.discountType == 'percentage'
                                     ? "${discount.discountValue.toStringAsFixed(0)}% OFF"
@@ -228,9 +228,7 @@ class _DashboardState extends State<Dashboard> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-
                               const Spacer(),
-
                               const Text(
                                 "Book now and save more",
                                 style: TextStyle(color: Colors.white70),
@@ -246,6 +244,7 @@ class _DashboardState extends State<Dashboard> {
 
               const SizedBox(height: 25),
               const SizedBox(height: 20),
+              //================================Upcomming Bookings List===============================
               Text(
                 'Upcomming Bookings',
                 style: TextStyle(color: Colors.white, fontSize: 18),
@@ -253,187 +252,201 @@ class _DashboardState extends State<Dashboard> {
               SizedBox(height: 15),
 
               StreamBuilder<List<CustomergroundDetails>>(
-  stream: DatabaseOperation().getUpcomingBookingsByUser(currentUserId),
-  builder: (context, snapshot) {
-    if (snapshot.connectionState == ConnectionState.waiting) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (!snapshot.hasData || snapshot.data!.isEmpty) {
-      return const Center(
-        child: Text(
-          "No Upcoming Bookings",
-          style: TextStyle(color: Colors.white70),
-        ),
-      );
-    }
-
-    final bookings = snapshot.data!;
-
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: bookings.length,
-      itemBuilder: (context, index) {
-        final booking = bookings[index];
-
-        return Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: const Color(0xFF1E1E1E),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: Colors.green.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(
-                      Icons.sports_soccer,
-                      color: Colors.green,
-                    ),
-                  ),
-
-                  const SizedBox(width: 15),
-
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          booking.groundName,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-
-                        const SizedBox(height: 5),
-
-                        Text(
-                          booking.slotTime,
-                          style: const TextStyle(color: Colors.white70),
-                        ),
-
-                        const SizedBox(height: 4),
-
-                        Text(
-                          booking.bookingDate != null
-                              ? "${booking.bookingDate!.day}/${booking.bookingDate!.month}/${booking.bookingDate!.year}"
-                              : "",
-                          style: const TextStyle(
-                            color: Colors.greenAccent,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  Text(
-                    "₹${booking.amount.toStringAsFixed(0)}",
-                    style: const TextStyle(
-                      color: Colors.green,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 12),
-
-              const Text(
-                "Players",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+                stream: DatabaseOperation().getUpcomingBookingsByUser(
+                  currentUserId,
                 ),
-              ),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-              const SizedBox(height: 8),
-
-              if (booking.players.isEmpty)
-                const Text(
-                  "No player details",
-                  style: TextStyle(color: Colors.white54),
-                )
-              else
-                Column(
-                  children: booking.players.map((player) {
-                    final name = player['name'] ?? '';
-                    final phone = player['phone'] ?? '';
-                    final splitAmount =
-                        (player['splitAmount'] as num?)?.toDouble() ?? 0.0;
-
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.25),
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        "No Upcoming Bookings",
+                        style: TextStyle(color: Colors.white70),
                       ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.person,
-                            color: Colors.greenAccent,
-                            size: 20,
-                          ),
+                    );
+                  }
 
-                          const SizedBox(width: 10),
+                  final bookings = snapshot.data!;
 
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: bookings.length,
+                    itemBuilder: (context, index) {
+                      final booking = bookings[index];
+
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1E1E1E),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
                               children: [
-                                Text(
-                                  name.toString(),
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
+                                Container(
+                                  width: 50,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    color: Colors.green.withValues(alpha: 0.15),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: const Icon(
+                                    Icons.sports_soccer,
+                                    color: Colors.green,
                                   ),
                                 ),
+
+                                const SizedBox(width: 15),
+
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        booking.groundName,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+
+                                      const SizedBox(height: 5),
+
+                                      Text(
+                                        booking.slotTime,
+                                        style: const TextStyle(
+                                          color: Colors.white70,
+                                        ),
+                                      ),
+
+                                      const SizedBox(height: 4),
+
+                                      Text(
+                                        booking.bookingDate != null
+                                            ? "${booking.bookingDate!.day}/${booking.bookingDate!.month}/${booking.bookingDate!.year}"
+                                            : "",
+                                        style: const TextStyle(
+                                          color: Colors.greenAccent,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
                                 Text(
-                                  phone.toString(),
+                                  "₹${booking.amount.toStringAsFixed(0)}",
                                   style: const TextStyle(
-                                    color: Colors.white60,
-                                    fontSize: 12,
+                                    color: Colors.green,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
                                   ),
                                 ),
                               ],
                             ),
-                          ),
 
-                          Text(
-                            "₹${splitAmount.toStringAsFixed(0)}",
-                            style: const TextStyle(
-                              color: Colors.greenAccent,
-                              fontWeight: FontWeight.bold,
+                            const SizedBox(height: 12),
+
+                            const Text(
+                              "Players",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                ),
-            ],
-          ),
-        );
-      },
-    );
-  },
-)
+
+                            const SizedBox(height: 8),
+
+                            if (booking.players.isEmpty)
+                              const Text(
+                                "No player details",
+                                style: TextStyle(color: Colors.white54),
+                              )
+                            else
+                              Column(
+                                children: booking.players.map((player) {
+                                  final name = player['name'] ?? '';
+                                  final phone = player['phone'] ?? '';
+                                  final splitAmount =
+                                      (player['splitAmount'] as num?)
+                                          ?.toDouble() ??
+                                      0.0;
+
+                                  return Container(
+                                    margin: const EdgeInsets.only(bottom: 8),
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: Colors.black.withValues(
+                                        alpha: 0.25,
+                                      ),
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(
+                                        color: Colors.green.withValues(
+                                          alpha: 0.3,
+                                        ),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.person,
+                                          color: Colors.greenAccent,
+                                          size: 20,
+                                        ),
+
+                                        const SizedBox(width: 10),
+
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                name.toString(),
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                              Text(
+                                                phone.toString(),
+                                                style: const TextStyle(
+                                                  color: Colors.white60,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+
+                                        Text(
+                                          "₹${splitAmount.toStringAsFixed(0)}",
+                                          style: const TextStyle(
+                                            color: Colors.greenAccent,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
             ],
 
             //
